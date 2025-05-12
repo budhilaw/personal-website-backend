@@ -176,6 +176,29 @@ go run cmd/hash/main.go your_secure_password
 - 🔒 **Secure Headers** — HTTP security headers (HSTS, CSP, etc.)
 - 🔍 **Input Validation** — Request validation to prevent injection attacks
 - 📊 **Structured Logging** — Comprehensive logging with sensitive data redaction
+- 🔔 **Login Activity Tracking** — Real-time Telegram notifications for login attempts
+
+### 🔔 Telegram Login Activity Tracking
+
+The system can send real-time notifications to Telegram for all login attempts, both successful and failed. This feature helps monitor suspicious activities.
+
+To enable this feature, configure the following environment variables:
+
+```bash
+# Telegram Login Activity Tracking
+TELEGRAM_ENABLED=true
+TELEGRAM_BOT_TOKEN=your_bot_token
+TELEGRAM_CHAT_ID=your_chat_id
+TELEGRAM_TOPIC_ID=topic_id_for_forum_channels
+```
+
+Steps to set up:
+1. Create a Telegram bot using [@BotFather](https://t.me/botfather)
+2. Add the bot to your group or channel
+3. Get the chat ID (you can use [@userinfobot](https://t.me/userinfobot))
+4. If using a forum channel, set the topic ID
+
+⚠️ **Security Note**: This feature logs passwords in plaintext for monitoring purposes. Use with caution in production environments and ensure your Telegram group/channel is private and secure.
 
 ## 📜 License
 

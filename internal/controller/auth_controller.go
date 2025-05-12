@@ -38,8 +38,8 @@ func (c *AuthController) Login(ctx *fiber.Ctx) error {
 		})
 	}
 
-	// Login
-	resp, err := c.authService.Login(ctx.Context(), loginReq.Username, loginReq.Password)
+	// Login - pass the Fiber context for IP and user agent tracking
+	resp, err := c.authService.Login(ctx.Context(), loginReq.Username, loginReq.Password, ctx)
 	if err != nil {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": "Invalid credentials",

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -28,6 +29,12 @@ type Config struct {
 	JWTRefreshExpiration time.Duration `mapstructure:"JWT_REFRESH_EXPIRATION"`
 
 	FrontendURL string `mapstructure:"FRONTEND_URL"`
+
+	// Telegram configuration for login activity tracking
+	TelegramEnabled  bool   `mapstructure:"TELEGRAM_ENABLED"`
+	TelegramBotToken string `mapstructure:"TELEGRAM_BOT_TOKEN"`
+	TelegramChatID   string `mapstructure:"TELEGRAM_CHAT_ID"`
+	TelegramTopicID  int    `mapstructure:"TELEGRAM_TOPIC_ID"`
 }
 
 // IsProduction returns true if the application is running in production mode
@@ -58,9 +65,22 @@ func LoadConfig() (config Config, err error) {
 	viper.SetDefault("JWT_REFRESH_EXPIRATION", time.Hour*24*7)
 	viper.SetDefault("FRONTEND_URL", "http://localhost:3000")
 
+	// Default Telegram settings
+	viper.SetDefault("TELEGRAM_ENABLED", false)
+	viper.SetDefault("TELEGRAM_BOT_TOKEN", "")
+	viper.SetDefault("TELEGRAM_CHAT_ID", "")
+	viper.SetDefault("TELEGRAM_TOPIC_ID", 0)
+
 	err = viper.Unmarshal(&config)
 	if err != nil {
 		return
+	}
+
+	// Parse TELEGRAM_TOPIC_ID manually in case it's not set correctly
+	if telegramTopicID := os.Getenv("TELEGRAM_TOPIC_ID"); telegramTopicID != "" {
+		if topicID, err := strconv.Atoi(telegramTopicID); err == nil {
+			config.TelegramTopicID = topicID
+		}
 	}
 
 	// Print configuration for debugging in development mode
