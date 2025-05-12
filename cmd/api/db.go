@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"os"
 	"strings"
@@ -9,7 +8,8 @@ import (
 	"github.com/budhilaw/personal-website-backend/config"
 	"github.com/budhilaw/personal-website-backend/db"
 	"github.com/budhilaw/personal-website-backend/internal/logger"
-	_ "github.com/lib/pq"
+	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/jmoiron/sqlx"
 	"github.com/pressly/goose/v3"
 	"go.uber.org/zap"
 )
@@ -117,7 +117,7 @@ func resetDatabase() {
 
 	// First down all migrations
 	logger.Info("Reverting all migrations")
-	if err := goose.Reset(database, "db/migration"); err != nil {
+	if err := goose.Reset(database.DB, "db/migration"); err != nil {
 		logger.Fatal("Failed to reset migrations", zap.Error(err))
 	}
 
@@ -131,13 +131,13 @@ func resetDatabase() {
 }
 
 // rollback rolls back the most recent migration
-func rollback(db *sql.DB) error {
+func rollback(db *sqlx.DB) error {
 	goose.SetBaseFS(nil)
 	if err := goose.SetDialect("postgres"); err != nil {
 		return fmt.Errorf("failed to set dialect: %w", err)
 	}
 
-	if err := goose.Down(db, "db/migration"); err != nil {
+	if err := goose.Down(db.DB, "db/migration"); err != nil {
 		return fmt.Errorf("failed to rollback migration: %w", err)
 	}
 

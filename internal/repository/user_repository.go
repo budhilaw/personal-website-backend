@@ -8,6 +8,7 @@ import (
 
 	"github.com/budhilaw/personal-website-backend/internal/logger"
 	"github.com/budhilaw/personal-website-backend/internal/model"
+	"github.com/jmoiron/sqlx"
 	"go.uber.org/zap"
 )
 
@@ -23,11 +24,11 @@ type UserRepository interface {
 
 // userRepository is the implementation of UserRepository
 type userRepository struct {
-	db *sql.DB
+	db *sqlx.DB
 }
 
 // NewUserRepository creates a new UserRepository
-func NewUserRepository(db *sql.DB) UserRepository {
+func NewUserRepository(db *sqlx.DB) UserRepository {
 	return &userRepository{db: db}
 }
 
@@ -40,7 +41,7 @@ func (r *userRepository) GetByID(ctx context.Context, id string) (*model.User, e
 	var user model.User
 	var lastName, avatar, bio sql.NullString
 
-	err := r.db.QueryRowContext(ctx, query, id).Scan(
+	err := r.db.QueryRowxContext(ctx, query, id).Scan(
 		&user.ID,
 		&user.Username,
 		&user.Password,
@@ -84,7 +85,7 @@ func (r *userRepository) GetByUsername(ctx context.Context, username string) (*m
 	var user model.User
 	var lastName, avatar, bio sql.NullString
 
-	err := r.db.QueryRowContext(ctx, query, username).Scan(
+	err := r.db.QueryRowxContext(ctx, query, username).Scan(
 		&user.ID,
 		&user.Username,
 		&user.Password,
@@ -128,7 +129,7 @@ func (r *userRepository) GetByEmail(ctx context.Context, email string) (*model.U
 	var user model.User
 	var lastName, avatar, bio sql.NullString
 
-	err := r.db.QueryRowContext(ctx, query, email).Scan(
+	err := r.db.QueryRowxContext(ctx, query, email).Scan(
 		&user.ID,
 		&user.Username,
 		&user.Password,

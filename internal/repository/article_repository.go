@@ -8,6 +8,7 @@ import (
 
 	"github.com/budhilaw/personal-website-backend/internal/model"
 	"github.com/budhilaw/personal-website-backend/internal/util"
+	"github.com/jmoiron/sqlx"
 )
 
 // ArticleRepository defines methods for article repository
@@ -23,11 +24,11 @@ type ArticleRepository interface {
 
 // articleRepository is the implementation of ArticleRepository
 type articleRepository struct {
-	db *sql.DB
+	db *sqlx.DB
 }
 
 // NewArticleRepository creates a new ArticleRepository
-func NewArticleRepository(db *sql.DB) ArticleRepository {
+func NewArticleRepository(db *sqlx.DB) ArticleRepository {
 	return &articleRepository{db: db}
 }
 

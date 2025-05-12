@@ -1,13 +1,17 @@
 package middleware
 
 import (
-	"fmt"
 	"strings"
-	"time"
 
 	"github.com/budhilaw/personal-website-backend/config"
+	"github.com/budhilaw/personal-website-backend/internal/logger"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
+	"go.uber.org/zap"
+)
+
+var (
+	jwtManager *JWTManager
 )
 
 // JWTClaims represents the JWT claims
@@ -18,60 +22,35 @@ type JWTClaims struct {
 	jwt.RegisteredClaims
 }
 
+// InitJWTManager initializes the JWT manager
+func InitJWTManager(cfg config.Config) {
+	jwtManager = NewJWTManager(cfg)
+	logger.Info("JWT Manager initialized with secret rotation")
+}
+
 // GenerateToken generates a new JWT token
 func GenerateToken(userID string, username string, isAdmin bool, cfg config.Config) (string, error) {
-	// Create token claims
-	claims := JWTClaims{
-		UserID:   userID,
-		Username: username,
-		IsAdmin:  isAdmin,
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(cfg.JWTExpiration)),
-			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			NotBefore: jwt.NewNumericDate(time.Now()),
-		},
+	if jwtManager == nil {
+		InitJWTManager(cfg)
 	}
-
-	// Create token
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-	// Generate encoded token
-	tokenString, err := token.SignedString([]byte(cfg.JWTSecret))
-	if err != nil {
-		return "", err
-	}
-
-	return tokenString, nil
+	return jwtManager.GenerateToken(userID, username, isAdmin)
 }
 
 // GenerateRefreshToken generates a new refresh token
 func GenerateRefreshToken(userID string, username string, isAdmin bool, cfg config.Config) (string, error) {
-	// Create token claims
-	claims := JWTClaims{
-		UserID:   userID,
-		Username: username,
-		IsAdmin:  isAdmin,
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(cfg.JWTRefreshExpiration)),
-			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			NotBefore: jwt.NewNumericDate(time.Now()),
-		},
+	if jwtManager == nil {
+		InitJWTManager(cfg)
 	}
-
-	// Create token
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-	// Generate encoded token
-	tokenString, err := token.SignedString([]byte(cfg.JWTRefreshSecret))
-	if err != nil {
-		return "", err
-	}
-
-	return tokenString, nil
+	return jwtManager.GenerateRefreshToken(userID, username, isAdmin)
 }
 
 // Protected middleware for protecting routes
 func Protected(cfg config.Config) fiber.Handler {
+	// Ensure JWT Manager is initialized
+	if jwtManager == nil {
+		InitJWTManager(cfg)
+	}
+
 	return func(c *fiber.Ctx) error {
 		// Get authorization header
 		authHeader := c.Get("Authorization")
@@ -91,24 +70,10 @@ func Protected(cfg config.Config) fiber.Handler {
 		// Extract the token
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 
-		// Parse token
-		token, err := jwt.ParseWithClaims(tokenString, &JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
-			// Validate the signing method
-			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-			}
-			return []byte(cfg.JWTSecret), nil
-		})
-
+		// Verify token using JWT Manager
+		claims, err := jwtManager.VerifyToken(tokenString)
 		if err != nil {
-			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-				"error": "Invalid or expired token",
-			})
-		}
-
-		// Get claims
-		claims, ok := token.Claims.(*JWTClaims)
-		if !ok || !token.Valid {
+			logger.Warn("Invalid JWT token", zap.Error(err), zap.String("token", tokenString[:10]+"..."))
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"error": "Invalid or expired token",
 			})

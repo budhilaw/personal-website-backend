@@ -24,6 +24,9 @@ func main() {
 	log := logger.InitLogger(cfg.IsProduction())
 	defer log.Sync()
 
+	// Initialize JWT Manager for secret rotation
+	middleware.InitJWTManager(cfg)
+
 	// Check if this is a database command
 	if len(os.Args) > 1 {
 		handleDBCommand()
@@ -71,9 +74,15 @@ func main() {
 	// Use global middlewares
 	app.Use(fiberRecover.New())
 	app.Use(middleware.ZapLogger())
+
+	// Security middleware
 	app.Use(middleware.Security(cfg.FrontendURL))
 	app.Use(middleware.Helmet())
 	app.Use(middleware.RateLimiter())
+
+	// Brute force protection
+	app.Use(middleware.BruteForceProtection())
+	app.Use(middleware.TrackLoginAttempt())
 
 	// Setup routes
 	router.SetupRoutes(app, authController, articleController, portfolioController, cfg)

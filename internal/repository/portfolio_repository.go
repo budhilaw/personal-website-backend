@@ -9,6 +9,7 @@ import (
 
 	"github.com/budhilaw/personal-website-backend/internal/model"
 	"github.com/budhilaw/personal-website-backend/internal/util"
+	"github.com/jmoiron/sqlx"
 )
 
 // PortfolioRepository defines methods for portfolio repository
@@ -24,11 +25,11 @@ type PortfolioRepository interface {
 
 // portfolioRepository is the implementation of PortfolioRepository
 type portfolioRepository struct {
-	db *sql.DB
+	db *sqlx.DB
 }
 
 // NewPortfolioRepository creates a new PortfolioRepository
-func NewPortfolioRepository(db *sql.DB) PortfolioRepository {
+func NewPortfolioRepository(db *sqlx.DB) PortfolioRepository {
 	return &portfolioRepository{db: db}
 }
 
