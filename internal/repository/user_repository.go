@@ -6,8 +6,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/budhilaw/personal-website-backend/internal/logger"
 	"github.com/budhilaw/personal-website-backend/internal/model"
+	"github.com/budhilaw/personal-website-backend/pkg/logger"
 	"github.com/jmoiron/sqlx"
 	"go.uber.org/zap"
 )

@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/budhilaw/personal-website-backend/config"
-	"github.com/budhilaw/personal-website-backend/internal/logger"
+	"github.com/budhilaw/personal-website-backend/pkg/logger"
 	"github.com/golang-jwt/jwt/v5"
 	"go.uber.org/zap"
 )

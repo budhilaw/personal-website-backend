@@ -5,12 +5,11 @@ import (
 	"errors"
 
 	"github.com/budhilaw/personal-website-backend/config"
-	"github.com/budhilaw/personal-website-backend/internal/logger"
 	"github.com/budhilaw/personal-website-backend/internal/middleware"
 	"github.com/budhilaw/personal-website-backend/internal/model"
 	"github.com/budhilaw/personal-website-backend/internal/repository"
-	"github.com/budhilaw/personal-website-backend/internal/telegram"
-	"github.com/budhilaw/personal-website-backend/internal/util"
+	"github.com/budhilaw/personal-website-backend/pkg/logger"
+	"github.com/budhilaw/personal-website-backend/pkg/util"
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
 )
@@ -28,15 +27,15 @@ type AuthService interface {
 type authService struct {
 	userRepo        repository.UserRepository
 	cfg             config.Config
-	telegramService *telegram.TelegramService
+	telegramService *TelegramService
 }
 
 // NewAuthService creates a new AuthService
-func NewAuthService(userRepo repository.UserRepository, cfg config.Config) AuthService {
+func NewAuthService(userRepo repository.UserRepository, telegramService *TelegramService, cfg config.Config) AuthService {
 	return &authService{
 		userRepo:        userRepo,
 		cfg:             cfg,
-		telegramService: telegram.NewTelegramService(cfg),
+		telegramService: telegramService,
 	}
 }
 

@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/budhilaw/personal-website-backend/internal/model"
-	"github.com/budhilaw/personal-website-backend/internal/util"
+	"github.com/budhilaw/personal-website-backend/pkg/util"
 	"github.com/jmoiron/sqlx"
 )
 

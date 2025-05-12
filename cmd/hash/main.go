@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/budhilaw/personal-website-backend/internal/util"
+	"github.com/budhilaw/personal-website-backend/pkg/util"
 )
 
 func main() {

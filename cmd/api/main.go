@@ -6,11 +6,11 @@ import (
 	"github.com/budhilaw/personal-website-backend/config"
 	"github.com/budhilaw/personal-website-backend/db"
 	"github.com/budhilaw/personal-website-backend/internal/controller"
-	"github.com/budhilaw/personal-website-backend/internal/logger"
 	"github.com/budhilaw/personal-website-backend/internal/middleware"
 	"github.com/budhilaw/personal-website-backend/internal/repository"
 	"github.com/budhilaw/personal-website-backend/internal/router"
 	"github.com/budhilaw/personal-website-backend/internal/service"
+	"github.com/budhilaw/personal-website-backend/pkg/logger"
 	"github.com/gofiber/fiber/v2"
 	fiberRecover "github.com/gofiber/fiber/v2/middleware/recover"
 	"go.uber.org/zap"
@@ -48,9 +48,11 @@ func main() {
 	userRepo := repository.NewUserRepository(database)
 	articleRepo := repository.NewArticleRepository(database)
 	portfolioRepo := repository.NewPortfolioRepository(database)
+	telegramRepo := repository.NewTelegramRepository(cfg, log)
 
 	// Initialize services
-	authService := service.NewAuthService(userRepo, cfg)
+	telegramService := service.NewTelegramService(telegramRepo, cfg, log)
+	authService := service.NewAuthService(userRepo, telegramService, cfg)
 	articleService := service.NewArticleService(articleRepo, userRepo)
 	portfolioService := service.NewPortfolioService(portfolioRepo, userRepo)
 

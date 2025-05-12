@@ -3,7 +3,7 @@ package middleware
 import (
 	"time"
 
-	"github.com/budhilaw/personal-website-backend/internal/logger"
+	"github.com/budhilaw/personal-website-backend/pkg/logger"
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"

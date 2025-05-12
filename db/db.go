@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/budhilaw/personal-website-backend/config"
-	"github.com/budhilaw/personal-website-backend/internal/logger"
+	"github.com/budhilaw/personal-website-backend/pkg/logger"
 	_ "github.com/jackc/pgx/v5/stdlib" // Use pgx driver
 	"github.com/jmoiron/sqlx"
 	"github.com/pressly/goose/v3"

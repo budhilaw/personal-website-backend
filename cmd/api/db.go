@@ -7,7 +7,7 @@ import (
 
 	"github.com/budhilaw/personal-website-backend/config"
 	"github.com/budhilaw/personal-website-backend/db"
-	"github.com/budhilaw/personal-website-backend/internal/logger"
+	"github.com/budhilaw/personal-website-backend/pkg/logger"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
 	"github.com/pressly/goose/v3"
